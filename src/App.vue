@@ -1,20 +1,35 @@
 <template>
-  <div>
-    <input v-model="newTaskText" ref="input" placeholder="Новая задача" />
-    <button @click="addTask">Добавить задачу</button>
+  <div class="page">
+    <div class="page-wrapper">
+      <form class="header" @submit.prevent="addTask">
+        <input
+          class="header-input"
+          v-model.trim="newTaskText"
+          ref="input"
+          placeholder="Новая задача"
+        />
+        <button type="submit" class="header-submit">Добавить задачу</button>
+      </form>
 
-    <div class="filters">
-      <button @click="setFilter(Filter.ACTIVE)" class="filter-item">Активные</button>
-      <button @click="setFilter(Filter.ALL)" class="filter-item">Все</button>
-      <button @click="setFilter(Filter.COMPLETED)" class="filter-item">Завершенные</button>
+      <div class="filters">
+        <button @click="setFilter(Filter.ACTIVE.value)" class="filter-item">
+          {{ Filter.ACTIVE.label }}
+        </button>
+        <button @click="setFilter(Filter.ALL.value)" class="filter-item">
+          {{ Filter.ALL.label }}
+        </button>
+        <button @click="setFilter(Filter.COMPLETED.value)" class="filter-item">
+          {{ Filter.COMPLETED.label }}
+        </button>
+      </div>
+
+      <ul v-if="isDataLoaded" class="task-list">
+        <li v-for="{ text, id, active } in visibleTasks" :key="`task-${id}`">
+          <task-card :text="text" :active="active" @setTaskCompleted="setCompleted(id)" />
+        </li>
+      </ul>
+      <p v-else>Загрузка...</p>
     </div>
-
-    <ul v-if="isDataLoaded" class="task-list">
-      <li v-for="{ text, id } in visibleTasks" :key="`task-${id}`">
-        <task-card :text="text" @setTaskCompleted="setCompleted(id)" />
-      </li>
-    </ul>
-    <p v-else>Загрузка...</p>
   </div>
 </template>
 
@@ -32,9 +47,18 @@ export default {
       newTaskText: "",
       isDataLoaded: false,
       Filter: {
-        ALL: "all",
-        ACTIVE: "active",
-        COMPLETED: "completed",
+        ALL: {
+          label: "Все",
+          value: "all",
+        },
+        ACTIVE: {
+          label: "Активные",
+          value: "active",
+        },
+        COMPLETED: {
+          label: "Завершенные",
+          value: "completed",
+        },
       },
     };
   },
@@ -55,12 +79,12 @@ export default {
     },
     setCompleted(id) {
       const index = this.tasks.findIndex((t) => t.id === id);
-      const task = this.tasks[999];
+      const task = this.tasks[index];
       if (!task) {
         console.error(`Задача с индексом: ${index} не найдена!`);
         return;
       }
-      this.$set(this.tasks, index, { ...task, active: false });
+      this.$set(this.tasks, index, { ...task, active: !task.active });
     },
     setFilter(filter) {
       this.activeFilter = filter;
@@ -69,9 +93,9 @@ export default {
     filterTasks() {
       this.visibleTasks = this.tasks.filter((task) => {
         switch (this.activeFilter) {
-          case this.Filter.COMPLETED:
+          case this.Filter.COMPLETED.value:
             return !task.active;
-          case this.Filter.ACTIVE:
+          case this.Filter.ACTIVE.value:
             return task.active;
           default:
             return true;
@@ -91,7 +115,7 @@ export default {
           console.error(`Ошибка запроса, статус ответа ${res.status}`);
         }
       } catch (e) {
-        throw new Error(`Ошибка fetch: ${e.message}`)
+        throw new Error(`Ошибка fetch: ${e.message}`);
       }
     },
   },
@@ -102,3 +126,52 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.page {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.page-wrapper {
+  width: 500px;
+  min-width: 310px;
+  margin: 0 auto 0 25px;
+  padding: 5px;
+  border: 1px solid;
+}
+
+.header {
+  display: flex;
+  height: 35px;
+  justify-content: space-between;
+}
+
+.header-input {
+  flex-basis: 100%;
+}
+
+.header-submit {
+  flex-shrink: 0;
+  margin-left: 5px;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.filter-item {
+  width: 33%;
+}
+
+.task-list {
+  margin: 10px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+</style>
