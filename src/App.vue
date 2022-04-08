@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page-wrapper">
-      <form class="header" @submit.prevent="addTask">
+      <form class="header" @submit.prevent="submitHandler">
         <input
           class="header-input"
           v-model.trim="newTaskText"
@@ -11,21 +11,15 @@
         <button type="submit" class="header-submit">Добавить задачу</button>
       </form>
 
-      <div class="filters">
-        <button @click="setFilter(Filter.ACTIVE.value)" class="filter-item">
-          {{ Filter.ACTIVE.label }}
-        </button>
-        <button @click="setFilter(Filter.ALL.value)" class="filter-item">
-          {{ Filter.ALL.label }}
-        </button>
-        <button @click="setFilter(Filter.COMPLETED.value)" class="filter-item">
-          {{ Filter.COMPLETED.label }}
-        </button>
-      </div>
+      <filter-container />
 
       <ul v-if="isDataLoaded" class="task-list">
         <li v-for="{ text, id, active } in visibleTasks" :key="`task-${id}`">
-          <task-card :text="text" :active="active" @setTaskCompleted="setCompleted(id)" />
+          <task-card
+            :text="text"
+            :active="active"
+            @setTaskCompleted="setCompleted(id)"
+          />
         </li>
       </ul>
       <p v-else>Загрузка...</p>
@@ -34,94 +28,46 @@
 </template>
 
 <script>
+import { mapActions, mapGetters, mapState } from "vuex";
 import TaskCard from "./components/task-card.vue";
+import FilterContainer from "./components/filter-container.vue";
+import { State } from "./store/state";
+import { ActionType } from "./store/actions";
+import { GetterType } from "./store/getters";
 
 export default {
   name: "App",
-  components: { TaskCard },
+  components: { TaskCard, FilterContainer },
   data() {
     return {
-      tasks: [],
-      visibleTasks: [],
-      activeFilter: "all",
       newTaskText: "",
-      isDataLoaded: false,
-      Filter: {
-        ALL: {
-          label: "Все",
-          value: "all",
-        },
-        ACTIVE: {
-          label: "Активные",
-          value: "active",
-        },
-        COMPLETED: {
-          label: "Завершенные",
-          value: "completed",
-        },
-      },
     };
   },
   created() {
-    this.fetchData();
+    this.loadTasks();
   },
   mounted() {
     this.$refs.input.focus();
   },
-  methods: {
-    addTask() {
-      this.tasks.push({
-        text: this.newTaskText,
-        id: this.tasks.length + 1,
-        active: true,
-      });
-      this.newTaskText = "";
-    },
-    setCompleted(id) {
-      const index = this.tasks.findIndex((t) => t.id === id);
-      const task = this.tasks[index];
-      if (!task) {
-        console.error(`Задача с индексом: ${index} не найдена!`);
-        return;
-      }
-      this.$set(this.tasks, index, { ...task, active: !task.active });
-    },
-    setFilter(filter) {
-      this.activeFilter = filter;
-      this.filterTasks();
-    },
-    filterTasks() {
-      this.visibleTasks = this.tasks.filter((task) => {
-        switch (this.activeFilter) {
-          case this.Filter.COMPLETED.value:
-            return !task.active;
-          case this.Filter.ACTIVE.value:
-            return task.active;
-          default:
-            return true;
-        }
-      });
-    },
-    async fetchData() {
-      try {
-        const res = await fetch(
-          "https://my-json-server.typicode.com/falk20/demo/todos"
-        );
-        if (res.ok) {
-          const data = await res.json();
-          this.tasks = data;
-          this.isDataLoaded = true;
-        } else {
-          console.error(`Ошибка запроса, статус ответа ${res.status}`);
-        }
-      } catch (e) {
-        throw new Error(`Ошибка fetch: ${e.message}`);
-      }
-    },
+  computed: {
+    ...mapState({
+      tasks: State.TASKS,
+      activeFilter: State.CURRENT_FILTER,
+      isDataLoaded: State.IS_DATA_LOADED,
+    }),
+    ...mapGetters({
+      visibleTasks: GetterType.GET_VISIBLE_TASKS,
+    }),
   },
-  watch: {
-    tasks() {
-      this.filterTasks();
+  methods: {
+    ...mapActions({
+      loadTasks: ActionType.FETCH_TASKS,
+      setCompleted: ActionType.SET_TASK_COMPLETED,
+      addTask: ActionType.ADD_TASK,
+    }),
+    submitHandler() {
+      this.addTask(this.newTaskText);
+      this.newTaskText = "";
     },
   },
 };
@@ -157,16 +103,6 @@ export default {
 .header-submit {
   flex-shrink: 0;
   margin-left: 5px;
-}
-
-.filters {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.filter-item {
-  width: 33%;
 }
 
 .task-list {
