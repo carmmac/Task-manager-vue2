@@ -1,15 +1,7 @@
 <template>
   <div class="page">
     <div class="page-wrapper">
-      <form class="header" @submit.prevent="submitHandler">
-        <input
-          class="header-input"
-          v-model.trim="newTaskText"
-          ref="input"
-          placeholder="Новая задача"
-        />
-        <button type="submit" class="header-submit">Добавить задачу</button>
-      </form>
+      <task-input-form />
 
       <filter-container />
 
@@ -23,22 +15,15 @@
 import { mapActions, mapState } from "vuex";
 import { State } from "./store/state";
 import { ActionType } from "./store/actions";
+import TaskInputForm from "./components/task-input-form.vue";
 import TaskList from "./components/task-list.vue";
 import FilterContainer from "./components/filter-container.vue";
 
 export default {
   name: "App",
-  components: { TaskList, FilterContainer },
-  data() {
-    return {
-      newTaskText: "",
-    };
-  },
+  components: { TaskInputForm, TaskList, FilterContainer },
   created() {
     this.loadTasks();
-  },
-  mounted() {
-    this.$refs.input.focus();
   },
   computed: {
     ...mapState({
@@ -50,12 +35,7 @@ export default {
   methods: {
     ...mapActions({
       loadTasks: ActionType.FETCH_TASKS,
-      addTask: ActionType.ADD_TASK,
     }),
-    submitHandler() {
-      this.addTask(this.newTaskText);
-      this.newTaskText = "";
-    },
   },
 };
 </script>
@@ -75,20 +55,5 @@ export default {
   margin: 0 auto 0 25px;
   padding: 5px;
   border: 1px solid;
-}
-
-.header {
-  display: flex;
-  height: 35px;
-  justify-content: space-between;
-}
-
-.header-input {
-  flex-basis: 100%;
-}
-
-.header-submit {
-  flex-shrink: 0;
-  margin-left: 5px;
 }
 </style>
