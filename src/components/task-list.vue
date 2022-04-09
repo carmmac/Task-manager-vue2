@@ -1,13 +1,13 @@
 <template>
-  <ul class="task-list">
-    <li v-for="{ text, id, active } in visibleTasks" :key="`task-${id}`">
-      <task-card
-        :text="text"
-        :active="active"
-        @setTaskCompleted="setCompleted(id)"
-      />
-    </li>
-  </ul>
+  <b-list-group class="row mt-3">
+    <b-list-group-item
+      :variant="active ? '' : 'dark'"
+      v-for="{ text, id, active } in visibleTasks"
+      :key="`task-${id}`"
+    >
+      <task-card :text="text" :active="active" :id="id" />
+    </b-list-group-item>
+  </b-list-group>
 </template>
 
 <script>
@@ -31,11 +31,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.task-list {
-  margin: 10px 0 0 0;
-  padding: 0;
-  list-style: none;
-}
-</style>

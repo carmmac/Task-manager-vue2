@@ -1,12 +1,17 @@
 <template>
-  <button @click="changeFilter(filterValue)" class="filter-button">
+  <b-button
+    :variant="buttonStyle"
+    @click="changeFilter(filterValue)"
+    class="col-3"
+  >
     {{ filterLabel }}
-  </button>
+  </b-button>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import { MutationType } from "@/store/mutations";
+import { State } from "@/store/state";
 export default {
   name: "FilterButton",
   props: {
@@ -19,14 +24,16 @@ export default {
       required: true,
     },
   },
+  computed: {
+    ...mapState({
+      activeFilter: State.CURRENT_FILTER,
+    }),
+    buttonStyle() {
+      return this.activeFilter === this.filterValue ? 'primary' : 'light';
+    }
+  },
   methods: {
     ...mapMutations({ changeFilter: MutationType.SET_FILTER }),
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.filter-button {
-  width: 30%;
-}
-</style>

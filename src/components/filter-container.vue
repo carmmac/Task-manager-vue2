@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-container">
+  <div class="d-flex align-items-center mt-3 justify-content-between">
     <filter-button
       v-for="({ label, value }, i) in Object.values(filter)"
       :key="`filter-btn-${i}`"
@@ -23,11 +23,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.filter-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-</style>

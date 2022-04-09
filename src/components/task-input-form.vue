@@ -1,12 +1,15 @@
 <template>
-  <form class="header" @submit.prevent="submitHandler">
-    <input
-      class="header-input"
-      v-model.trim="newTaskText"
-      ref="input"
-      placeholder="Новая задача"
-    />
-    <button type="submit" class="header-submit">Добавить задачу</button>
+  <form class="d-flex align-items-center" @submit.prevent="submitHandler">
+    <div class="flex-fill">
+      <b-form-input
+        v-model.trim="newTaskText"
+        ref="input"
+        placeholder="Новая задача"
+      />
+    </div>
+    <div class="ms-3">
+      <b-button type="submit">Добавить задачу</b-button>
+    </div>
   </form>
 </template>
 
@@ -34,20 +37,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.header {
-  display: flex;
-  height: 35px;
-  justify-content: space-between;
-}
-
-.header-input {
-  flex-basis: 100%;
-}
-
-.header-submit {
-  flex-shrink: 0;
-  margin-left: 5px;
-}
-</style>

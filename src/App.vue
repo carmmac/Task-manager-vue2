@@ -1,13 +1,11 @@
 <template>
-  <div class="page">
-    <div class="page-wrapper">
-      <task-input-form />
+  <div class="container p-3">
+    <task-input-form />
 
-      <filter-container />
+    <filter-container />
 
-      <task-list v-if="isDataLoaded" />
-      <p v-else>Загрузка...</p>
-    </div>
+    <task-list v-if="isDataLoaded" />
+    <p v-else>Загрузка...</p>
   </div>
 </template>
 
@@ -39,21 +37,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.page {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.page-wrapper {
-  width: 500px;
-  min-width: 310px;
-  margin: 0 auto 0 25px;
-  padding: 5px;
-  border: 1px solid;
-}
-</style>

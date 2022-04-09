@@ -1,17 +1,35 @@
 <template>
-  <div class="task" :class="active ? '' : 'task--completed'">
-    <label class="check-icon">
-      <input
-        type="checkbox"
-        class="hidden"
-        @change="setTaskCompleted"
-      />
+  <div>
+    <label :for="`check-${id}`" class="me-2 pointer">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        :class="`bi bi-check-square ${iconStyle}`"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"
+        />
+        <path
+          d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"
+        />
+      </svg>
     </label>
-    <span class="task-text">{{ text }}</span>
+    <input
+      :id="`check-${id}`"
+      type="checkbox"
+      class="hidden"
+      @change="setTaskCompleted(id)"
+    />
+    <span>{{ text }}</span>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+import { ActionType } from "@/store/actions";
 export default {
   name: "TaskCard",
   props: {
@@ -24,11 +42,20 @@ export default {
       type: Boolean,
       required: true,
     },
+    id: {
+      type: Number,
+      required: true,
+    },
+  },
+  computed: {
+    iconStyle() {
+      return this.active ? "active" : "";
+    },
   },
   methods: {
-    setTaskCompleted() {
-      this.$emit(`setTaskCompleted`);
-    },
+    ...mapActions({
+      setTaskCompleted: ActionType.SET_TASK_COMPLETED,
+    }),
   },
 };
 </script>
@@ -37,46 +64,15 @@ export default {
 .hidden {
   position: absolute;
   opacity: 0;
-  cursor: pointer;
   height: 0;
   width: 0;
 }
 
-.check-icon {
-  position: relative;
-  &::before {
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    background-image: url("../assets/active.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-color: #54e354;
-  }
+.pointer {
+  cursor: pointer;
 }
 
-.task {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-
-  &--completed .task-text {
-    background-color: #d1d1d1;
-    text-decoration: line-through;
-  }
-
-  &--completed .check-icon::before {
-    background-image: url("../assets/completed.png");
-    background-color: #d1d1d1;
-  }
-}
-
-.task-text {
-  display: block;
-  flex-basis: 100%;
-  margin-left: 25px;
+.active {
+  background-color: #7de29f;
 }
 </style>
