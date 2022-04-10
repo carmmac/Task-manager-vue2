@@ -5,7 +5,10 @@
     <filter-container />
 
     <task-list v-if="isDataLoaded" />
-    <p v-else>Загрузка...</p>
+    <!-- <p class="center-block mx-auto">Загрузка...</p> -->
+    <div v-else>
+      <loading />
+    </div>
   </div>
 </template>
 
@@ -16,10 +19,11 @@ import { ActionType } from "./store/actions";
 import TaskInputForm from "./components/task-input-form.vue";
 import TaskList from "./components/task-list.vue";
 import FilterContainer from "./components/filter-container.vue";
+import Loading from "./components/loading.vue";
 
 export default {
   name: "App",
-  components: { TaskInputForm, TaskList, FilterContainer },
+  components: { TaskInputForm, TaskList, FilterContainer, Loading },
   created() {
     this.loadTasks();
   },
