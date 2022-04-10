@@ -1,11 +1,19 @@
 <template>
-  <form class="d-flex align-items-center" @submit.prevent="submitHandler">
+  <form class="d-flex align-items-top" @submit.prevent="submitHandler">
     <div class="flex-fill">
       <b-form-input
+        id="input-live"
         v-model.trim="newTaskText"
-        ref="input"
+        ref="newTaskInput"
         placeholder="Новая задача"
+        :state="isValid"
+        @input="setDirty"
+        @blur="removeDirty"
+        autofocus
       />
+      <b-form-invalid-feedback id="input-live-feedback">
+        Введите название задачи
+      </b-form-invalid-feedback>
     </div>
     <div class="ms-3">
       <b-button type="submit">Добавить задачу</b-button>
@@ -21,18 +29,33 @@ export default {
   data() {
     return {
       newTaskText: "",
+      isInputDirty: null,
     };
   },
-  mounted() {
-    this.$refs.input.focus();
+  computed: {
+    isValid() {
+      return this.isInputDirty && Boolean(this.newTaskText.length);
+    },
   },
   methods: {
     ...mapActions({
       addTask: ActionType.ADD_TASK,
     }),
+    setDirty() {
+      return this.isInputDirty = true;
+    },
+    removeDirty() {
+      return this.isInputDirty = null;
+    },
     submitHandler() {
-      this.addTask(this.newTaskText);
-      this.newTaskText = "";
+      if (this.isValid) {
+        this.addTask(this.newTaskText);
+        this.newTaskText = "";
+        this.removeDirty();
+      } else {
+        this.$refs.newTaskInput.focus();
+        this.setDirty();
+      }
     },
   },
 };
