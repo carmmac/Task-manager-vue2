@@ -5,7 +5,6 @@
     <filter-container />
 
     <task-list v-if="isDataLoaded" />
-    <!-- <p class="center-block mx-auto">Загрузка...</p> -->
     <div v-else>
       <loading />
     </div>
@@ -29,8 +28,6 @@ export default {
   },
   computed: {
     ...mapState({
-      tasks: State.TASKS,
-      activeFilter: State.CURRENT_FILTER,
       isDataLoaded: State.IS_DATA_LOADED,
     }),
   },

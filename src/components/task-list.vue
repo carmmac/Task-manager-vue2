@@ -11,9 +11,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import { GetterType } from "@/store/getters";
-import { ActionType } from "@/store/actions";
 import TaskCard from "./task-card.vue";
 
 export default {
@@ -22,11 +21,6 @@ export default {
   computed: {
     ...mapGetters({
       visibleTasks: GetterType.GET_VISIBLE_TASKS,
-    }),
-  },
-  methods: {
-    ...mapActions({
-      setCompleted: ActionType.SET_TASK_COMPLETED,
     }),
   },
 };
