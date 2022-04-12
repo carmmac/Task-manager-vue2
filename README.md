@@ -1,4 +1,5 @@
-# task-manager
+# Simple task manager built with Vue-2 and Vuex.
+My first experience using Vue & Vuex base on independent study. 
 
 ## Project setup
 ```
